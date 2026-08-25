@@ -1,6 +1,7 @@
 from airflow.sdk import dag, task
 from pendulum import datetime
 from scripts.extract import extract_energy_data
+from scripts.validate import validate_energy_data_task
 
 
 @dag(
@@ -17,7 +18,13 @@ def energy_pipeline():
     def extract():
         return extract_energy_data()
 
-    extract()
+    @task.python
+    def validate(file_path: str):
+        return validate_energy_data_task(file_path)
+
+    #validate receives file path from extract via XCom
+    raw_path = extract()
+    validate(raw_path)
 
 
 energy_pipeline()
