@@ -2,11 +2,7 @@ import requests
 import pandas as pd
 
 def fetch_energy_data(start_date: str, end_date: str, api_key: str) -> pd.DataFrame:
-    """
-    Pure function — no Airflow dependency.
-    Fetches hourly demand and net generation data from EIA API.
-    Testable standalone without Airflow running.
-    """
+
     url = "https://api.eia.gov/v2/electricity/rto/region-data/data/"
     all_records = []
 
@@ -28,7 +24,7 @@ def fetch_energy_data(start_date: str, end_date: str, api_key: str) -> pd.DataFr
 
     df = pd.DataFrame(all_records)
 
-    # Keep only fact columns — drop dimension data (respondent-name, type-name, value-units)
+    # Keep only fact columns
     df = df[["period", "respondent", "type", "value"]]
 
     return df

@@ -2,11 +2,7 @@ import pandas as pd
 
 
 def validate_energy_data(file_path: str) -> str:
-    """
-    Pure function — validates raw energy CSV.
-    Raises ValueError with a clear message if any check fails.
-    Returns file_path if all checks pass (so next task can receive it via XCom).
-    """
+
     df = pd.read_csv(file_path)
 
     # Check 1 — Null values
