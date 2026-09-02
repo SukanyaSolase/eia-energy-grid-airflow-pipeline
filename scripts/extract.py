@@ -33,17 +33,22 @@ def fetch_energy_data(start_date: str, end_date: str, api_key: str) -> pd.DataFr
 def extract_energy_data():
     """
     Airflow wrapper — fetches context + secret, calls pure function, saves CSV.
-    This is what the DAG task actually calls.
     """
     from airflow.sdk import get_current_context
     from airflow.sdk import Variable
-
+    from pendulum import instance
+    
     context = get_current_context()
     data_interval_start = context["data_interval_start"]
     data_interval_end = context["data_interval_end"]
 
-    start_str = data_interval_start.strftime("%Y-%m-%d")
-    end_str = data_interval_end.strftime("%Y-%m-%d")
+    # start_str = data_interval_start.strftime("%Y-%m-%d")
+    # end_str = data_interval_end.strftime("%Y-%m-%d")
+    
+    lagged_start = instance(data_interval_start).subtract(days=1)
+    lagged_end = instance(data_interval_end).subtract(days=1)
+    start_str = lagged_start.strftime("%Y-%m-%d")
+    end_str = lagged_end.strftime("%Y-%m-%d")
 
     api_key = Variable.get("eia_api_key")
 

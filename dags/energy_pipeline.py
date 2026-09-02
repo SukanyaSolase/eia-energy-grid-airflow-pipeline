@@ -3,6 +3,7 @@ from pendulum import datetime
 from scripts.extract import extract_energy_data
 from scripts.validate import validate_energy_data_task
 from scripts.transform import transform_energy_data_task
+from scripts.load import load_energy_data_task
 
 
 @dag(
@@ -27,9 +28,14 @@ def energy_pipeline():
     def transform(file_path: str):
         return transform_energy_data_task(file_path)
 
+    @task.python
+    def load(file_path: str):
+        return load_energy_data_task(file_path)
+
     raw_path = extract()
     validated_path = validate(raw_path)
-    transform(validated_path)
+    clean_path = transform(validated_path)
+    load(clean_path)
 
 
 energy_pipeline()
