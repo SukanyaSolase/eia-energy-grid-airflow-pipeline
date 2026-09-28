@@ -19,13 +19,11 @@ Every day at midnight, this pipeline:
 
 ## Architecture
 
+```
 EIA API (live) → Extract → Validate → Transform → Load → Quality Check → Alert
-↓
-PostgreSQL
-
-**Stack:** Python 3.13 · Apache Airflow 3.2.1 · CeleryExecutor · PostgreSQL 16 · Redis · Pandas · Docker Compose
-
-**Airflow setup:** CeleryExecutor with Redis message queue — same architecture used in production at scale. Workers poll Redis for tasks; the scheduler never executes code directly.
+                                                      ↓
+                                                 PostgreSQL
+```
 
 ---
 
@@ -90,22 +88,24 @@ Runs directly against PostgreSQL after load:
 
 ## Project structure
 
+```
 eia-energy-grid-airflow-pipeline/
 ├── dags/
-│ └── energy_pipeline.py # 6-task DAG definition
+│   └── energy_pipeline.py        # 6-task DAG definition
 ├── scripts/
-│ ├── extract.py # EIA API pull — pure function + Airflow wrapper
-│ ├── validate.py # 6 data quality checks on raw data
-│ ├── transform.py # Hourly → daily aggregation + net surplus calc
-│ ├── load.py # PostgreSQL upsert
-│ ├── quality_check.py # Post-load DB verification
-│ └── alert.py # on_failure_callback — structured failure logging
+│   ├── extract.py                # EIA API pull — pure function + Airflow wrapper
+│   ├── validate.py               # 6 data quality checks on raw data
+│   ├── transform.py              # Hourly → daily aggregation + net surplus calc
+│   ├── load.py                   # PostgreSQL upsert
+│   ├── quality_check.py          # Post-load DB verification
+│   └── alert.py                  # on_failure_callback — structured failure logging
 ├── data/
-│ ├── raw/ # Raw CSVs from EIA API (gitignored)
-│ └── clean/ # Transformed daily summaries (gitignored)
-├── docker-compose.yaml # Full Airflow 3.x stack — CeleryExecutor
-├── .env.example # Environment variable template
+│   ├── raw/                      # Raw CSVs from EIA API (gitignored)
+│   └── clean/                    # Transformed daily summaries (gitignored)
+├── docker-compose.yaml           # Full Airflow 3.x stack — CeleryExecutor
+├── .env.example                  # Environment variable template
 └── .gitignore
+```
 
 ---
 
