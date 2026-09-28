@@ -5,6 +5,7 @@ from scripts.validate import validate_energy_data_task
 from scripts.transform import transform_energy_data_task
 from scripts.load import load_energy_data_task
 from scripts.quality_check import quality_check_energy_data_task
+from scripts.alert import send_failure_alert
 
 
 @dag(
@@ -14,6 +15,11 @@ from scripts.quality_check import quality_check_energy_data_task
     catchup=False,
     is_paused_upon_creation=False,
     tags=["energy", "eia", "portfolio"],
+    default_args={
+        "retries": 1,
+        "retry_delay": 300,
+        "on_failure_callback": send_failure_alert,
+    }
 )
 def energy_pipeline():
 
